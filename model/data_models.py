@@ -18,15 +18,15 @@ class JobMetadata:
 
 @dataclass
 class JobCompany:
-    name: str = ""
-    jobs_url: str = ""
-    logo_src: str = ""
+    name: Optional[str] = None
+    jobs_url: Optional[str] = None
+    logo_src: Optional[str] = None
 
 @dataclass
 class ParsedJobRow:
     id: Optional[str] = None
-    title: str = ""
-    location: str = ""
+    title: Optional[str] = None
+    location: Optional[str] = None
     metadata: JobMetadata = None
     company: JobCompany = None
     dates: JobDates = None
