@@ -136,11 +136,6 @@ class Parser:
             if len(cells) < 6:
                 continue
 
-            # Star/favorite cell
-            star_cell = cells[0]
-            star_img = star_cell.find("img")
-            is_favorite = star_img and "unstar" not in star_img.get("src", "")
-
             # Title cell
             title_cell = cells[1]
             job_link = title_cell.find("a")
@@ -153,7 +148,6 @@ class Parser:
             # Metadata from images
             metadata_images = [img.get("src", "") for img in title_cell.find_all("img")]
             metadata = JobMetadata(
-                is_favorite=is_favorite,
                 is_expiring=any("exp" in src for src in metadata_images),
                 was_recently_updated=any("upd" in src for src in metadata_images),
                 has_salary_info=any("salary" in src for src in metadata_images),
@@ -228,10 +222,6 @@ class Parser:
         title_span = job_div.find("span")
         title = title_span.text.strip() if title_span else ""
 
-        # Check if favorite
-        star_icon = job_div.find("img")
-        is_favorite = star_icon and "unstar" not in star_icon.get("src", "")
-
         # Find tables
         tables = job_div.find_all("table")
         if len(tables) < 2:
@@ -273,7 +263,6 @@ class Parser:
         return ParsedJobView(
             id=job_id,
             title=title,
-            is_favorite=is_favorite,
             dates=dates,
             description_path=description_path,
         )
