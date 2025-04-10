@@ -9,7 +9,6 @@ class JobDates:
 
 @dataclass
 class JobMetadata:
-    is_favorite: bool = False
     is_expiring: bool = False
     was_recently_updated: bool = False
     has_salary_info: bool = False
@@ -43,7 +42,6 @@ class ParsedJobRow:
 class ParsedJobView:
     id: str = ""
     title: str = ""
-    is_favorite: bool = False
     dates: JobDates = None
     description_path: str = ""
     

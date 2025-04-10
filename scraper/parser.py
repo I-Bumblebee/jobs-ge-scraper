@@ -1,8 +1,6 @@
 import os
-import json
-from typing import Optional, Iterator
+from typing import Optional, Iterator, Tuple
 from bs4 import BeautifulSoup
-import aiofiles
 from datetime import datetime
 from dataclasses import asdict
 from model.data_models import (
@@ -34,7 +32,6 @@ class Parser:
         """
         self.data_dir = data_dir
         self.descriptions_dir = os.path.join(data_dir, "descriptions")
-        self.ensure_directories()
 
     def _extract_job_id(self, url: Optional[str]) -> Optional[str]:
         """
@@ -50,10 +47,6 @@ class Parser:
             return None
         match = re.search(r"id=(\d+)", url)
         return match.group(1) if match else None
-
-    def ensure_directories(self):
-        """Create necessary directories if they don't exist."""
-        os.makedirs(self.descriptions_dir, exist_ok=True)
 
     def parse_date(self, date_str: str) -> Optional[datetime]:
         if not date_str or date_str.strip() == "":
@@ -111,12 +104,13 @@ class Parser:
         except Exception:
             return None
 
-    def parse_job_list(self, html: str) -> Iterator[ParsedJobRow]:
+    def parse_job_list(self, html: str, limit: int = None) -> Iterator[ParsedJobRow]:
         """
         Parse job list HTML and yield job rows one at a time to conserve memory.
 
         Args:
             html: HTML content of the job list page
+            limit: Maximum number of jobs to retrieve (None for all jobs)
 
         Yields:
             ParsedJobRow objects, one at a time
@@ -128,18 +122,18 @@ class Parser:
             return
 
         rows = job_table.find_all("tr")
+        jobs_yielded = 0
 
         # Skip header row
         for row in rows[1:]:
+            # If job_count is specified and we've reached the limit, stop
+            if limit is not None and jobs_yielded >= limit:
+                break
+
             # Parse row similar to your JS implementation
             cells = row.find_all("td")
             if len(cells) < 6:
                 continue
-
-            # Star/favorite cell
-            star_cell = cells[0]
-            star_img = star_cell.find("img")
-            is_favorite = star_img and "unstar" not in star_img.get("src", "")
 
             # Title cell
             title_cell = cells[1]
@@ -153,7 +147,6 @@ class Parser:
             # Metadata from images
             metadata_images = [img.get("src", "") for img in title_cell.find_all("img")]
             metadata = JobMetadata(
-                is_favorite=is_favorite,
                 is_expiring=any("exp" in src for src in metadata_images),
                 was_recently_updated=any("upd" in src for src in metadata_images),
                 has_salary_info=any("salary" in src for src in metadata_images),
@@ -206,8 +199,9 @@ class Parser:
             )
             logger.info(f"Parsed job row: {job_title} (ID: {job_id})")
             yield job_row
+            jobs_yielded += 1
 
-    async def parse_job_detail(self, html: str, job_id: str) -> ParsedJobView:
+    async def parse_job_detail(self, html: str, job_id: str) -> Tuple[ParsedJobView, str]:
         """
         Parse job detail HTML and save large description to file.
 
@@ -227,10 +221,6 @@ class Parser:
         # Extract title
         title_span = job_div.find("span")
         title = title_span.text.strip() if title_span else ""
-
-        # Check if favorite
-        star_icon = job_div.find("img")
-        is_favorite = star_icon and "unstar" not in star_icon.get("src", "")
 
         # Find tables
         tables = job_div.find_all("table")
@@ -264,56 +254,8 @@ class Parser:
         description_cell = description_row.find("td")
         description = description_cell.decode_contents() if description_cell else ""
 
-        # Save description to file
-        description_path = os.path.join(
-            self.descriptions_dir, f"job-description-{job_id}.html"
-        )
-        await self._save_description(description, description_path)
-
         return ParsedJobView(
             id=job_id,
             title=title,
-            is_favorite=is_favorite,
             dates=dates,
-            description_path=description_path,
-        )
-
-    async def _save_description(self, description: str, path: str) -> None:
-        """
-        Save job description to file asynchronously.
-
-        Args:
-            description: HTML description content
-            path: File path to save to
-        """
-        async with aiofiles.open(path, "w", encoding="utf-8") as f:
-            await f.write(description)
-
-    async def save_job_summary(self, job: ParsedJobRow) -> None:
-        """
-        Save job summary to JSON file.
-
-        Args:
-            job: ParsedJobRow object to save
-        """
-        if not job.id:
-            return
-
-        summary_path = os.path.join(self.data_dir, f"job-summary-{job.id}.json")
-        async with aiofiles.open(summary_path, "w", encoding="utf-8") as f:
-            await f.write(
-                json.dumps(asdict(job), default=str, ensure_ascii=False, indent=2)
-            )
-
-    async def save_job_detail(self, job: ParsedJobView) -> None:
-        """
-        Save job detail to JSON file.
-
-        Args:
-            job: ParsedJobView object to save
-        """
-        detail_path = os.path.join(self.data_dir, f"job-detail-{job.id}.json")
-        async with aiofiles.open(detail_path, "w", encoding="utf-8") as f:
-            await f.write(
-                json.dumps(asdict(job), default=str, ensure_ascii=False, indent=2)
-            )
+        ), description
