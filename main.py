@@ -6,7 +6,7 @@ async def main():
     pipeline = Pipeline(
         output_dir="data/output",
         job_count=2,
-        local="ge",
+        locale="ge",
         batch_size=10,
         max_concurrent_details=5
     )

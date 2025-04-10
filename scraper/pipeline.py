@@ -38,7 +38,7 @@ class Pipeline:
         self,
         output_dir: str,
         job_count: int,
-        local: str = "ge",
+        locale: str = "ge",
         location_id: Optional[int] = None,
         category_id: Optional[int] = None,
         query: Optional[str] = None,
@@ -48,7 +48,7 @@ class Pipeline:
         data_dir: str = "data"
     ):
         self.output_manager = OutputManager(output_dir)
-        self.collector = Collector(local=local, job_count=job_count, location_id=location_id, category_id=category_id, query=query, has_salary=has_salary)
+        self.collector = Collector(locale=locale, job_count=job_count, location_id=location_id, category_id=category_id, query=query, has_salary=has_salary)
         self.parser = Parser(data_dir=data_dir)
         self.batch_size = batch_size
         self.max_concurrent_details = max_concurrent_details
@@ -96,7 +96,7 @@ class Pipeline:
     ) -> AsyncGenerator[Tuple[str, JobDetailDict], None]:
         """Generate job details one at a time as they complete."""
         job_urls = [
-            f"https://jobs.ge/{self.collector.local}/?view=jobs&id={job_id}" 
+            f"https://jobs.ge/{self.collector.locale}/?view=jobs&id={job_id}" 
             for job_id in job_ids
         ]
         

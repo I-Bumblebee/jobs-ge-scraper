@@ -14,7 +14,7 @@ class Collector:
     
     def __init__(
         self,
-        local: str = "ge",
+        locale: str = "ge",
         job_count: int = 20,
         location_id: Optional[int] = None,
         category_id: Optional[int] = None,
@@ -28,7 +28,7 @@ class Collector:
         Initialize the collector with search parameters.
         
         Args:
-            local: Language locale (e.g., 'ge', 'en')
+            locale: Language localee (e.g., 'ge', 'en')
             job_count: Total number of jobs to fetch
             location_id: Filter by location ID
             category_id: Filter by category ID
@@ -38,7 +38,7 @@ class Collector:
             max_retries: Maximum number of retry attempts for failed requests
             max_concurrent: Maximum concurrent requests
         """
-        self.local = local
+        self.locale = locale
         self.job_count = job_count
         self.location_id = location_id
         self.category_id = category_id
@@ -75,7 +75,7 @@ class Collector:
         Returns:
             Complete URL for the request
         """
-        base_url = f"https://jobs.ge/{self.local}"
+        base_url = f"https://jobs.ge/{self.locale}"
         
         # Detail page
         if job_id:
