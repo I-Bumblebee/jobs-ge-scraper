@@ -25,7 +25,12 @@ This project is a web scraper for the Jobs.ge website. It extracts job postings 
     ```bash
     python scraper.py
     ```
-2. The scraped data will be saved in the `output` folder.
+3. To use the graphical user interface (GUI), run the following command:
+    ```bash
+    python gui.py
+    ```
+4. The GUI allows users to configure scraping parameters and start the scraping process without using the command line.
+5. The scraped data will be saved in the `output` folder in a structured format for further use.
 
 ## Requirements
 - Python 3.x
