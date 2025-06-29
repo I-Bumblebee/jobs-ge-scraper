@@ -8,6 +8,7 @@ class Platform(Enum):
     """Supported job platforms."""
     JOBS_GE = "jobs_ge"
     CV_GE = "cv_ge"
+    HR_GE = "hr_ge"
     INDEED = "indeed"
     LINKEDIN = "linkedin"
     GLASSDOOR = "glassdoor"
