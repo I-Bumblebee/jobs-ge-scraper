@@ -7,7 +7,7 @@ from dataclasses import asdict
 from ..scrapers.base.scraper_interface import ScraperInterface, ScrapingConfig
 from ..scrapers.factory.scraper_factory import ScraperFactory, ScraperType
 from ..data.models import Platform, ScrapingResult
-from ..utils.output_manager import OutputManager
+from ..utils.database_output_manager import DatabaseOutputManager
 
 
 class JobPipeline:
@@ -18,7 +18,6 @@ class JobPipeline:
     
     def __init__(
         self,
-        output_dir: str,
         platforms: List[ScraperType],
         config: ScrapingConfig,
         max_concurrent_details: int = 5
@@ -27,12 +26,11 @@ class JobPipeline:
         Initialize the job pipeline.
         
         Args:
-            output_dir: Directory for output files
             platforms: List of platforms to scrape
             config: Scraping configuration
             max_concurrent_details: Maximum concurrent detail requests
         """
-        self.output_manager = OutputManager(output_dir)
+        self.db_manager = DatabaseOutputManager()
         self.platforms = platforms
         self.config = config
         self.max_concurrent_details = max_concurrent_details
@@ -195,10 +193,7 @@ class JobPipeline:
             all_jobs = []
             async for job_listing in self.scrape_job_listings():
                 all_jobs.append(job_listing)
-                await self.output_manager.save_job_temp(
-                    job_listing.get('id', 'unknown'), 
-                    job_listing
-                )
+                await self.db_manager.save_job_listing(job_listing)
             
             summary['total_jobs_found'] = len(all_jobs)
             self.logger.info(f"Found {len(all_jobs)} total jobs")
@@ -218,18 +213,7 @@ class JobPipeline:
             
             # Phase 3: Save detailed jobs
             for job_detail in detailed_jobs:
-                job_id = job_detail.get('id', 'unknown')
-                await self.output_manager.save_job_temp(f"detail_{job_id}", job_detail)
-                
-                # Save description if available
-                if job_detail.get('description'):
-                    await self.output_manager.save_description(
-                        job_id, 
-                        job_detail['description']
-                    )
-            
-            # Phase 4: Finalize output
-            await self.output_manager.finalize()
+                await self.db_manager.save_job_details(job_detail)
             
             end_time = datetime.now()
             summary['end_time'] = end_time.isoformat()

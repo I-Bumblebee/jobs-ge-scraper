@@ -16,19 +16,12 @@ class PipelineManager:
     Supports running multiple configurations or platforms simultaneously.
     """
     
-    def __init__(self, base_output_dir: str = "data/output"):
+    def __init__(self):
         """
         Initialize the pipeline manager.
-        
-        Args:
-            base_output_dir: Base directory for all pipeline outputs
         """
-        self.base_output_dir = Path(base_output_dir)
         self.logger = logging.getLogger(f"{__name__}.PipelineManager")
         self.pipelines: Dict[str, JobPipeline] = {}
-        
-        # Ensure output directory exists
-        self.base_output_dir.mkdir(parents=True, exist_ok=True)
     
     def create_pipeline(
         self,
@@ -49,13 +42,7 @@ class PipelineManager:
         Returns:
             Created pipeline instance
         """
-        # Create unique output directory for this pipeline
-        timestamp = datetime.now().strftime("%Y_%m_%d__%H_%M_%S")
-        output_dir = self.base_output_dir / f"{name}_{timestamp}"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        
         pipeline = JobPipeline(
-            output_dir=str(output_dir),
             platforms=platforms,
             config=config,
             max_concurrent_details=max_concurrent_details
@@ -193,7 +180,7 @@ class PipelineManager:
                 'locale': pipeline.config.locale,
                 'batch_size': pipeline.config.batch_size,
             },
-            'output_dir': pipeline.output_manager.output_dir
+            'database_enabled': True
         }
     
     def list_pipelines(self) -> Dict[str, Dict[str, Any]]:
