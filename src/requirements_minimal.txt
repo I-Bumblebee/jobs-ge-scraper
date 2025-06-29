@@ -1,0 +1,12 @@
+# Essential dependencies for the job scraper
+requests==2.31.0
+beautifulsoup4==4.12.2
+pyyaml==6.0.1
+click==8.1.7
+rich==13.7.0
+
+# Optional but recommended
+pandas>=2.0.0
+numpy>=1.24.0
+aiohttp>=3.8.0
+selenium>=4.15.0 
