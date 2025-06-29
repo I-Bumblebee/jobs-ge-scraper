@@ -65,3 +65,6 @@ ratelimit==2.2.1
 
 # Environment management
 python-dotenv==1.0.0
+
+# HTML templating for reports
+jinja2==3.1.2
