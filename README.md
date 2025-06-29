@@ -7,7 +7,7 @@ A comprehensive multi-source job scraping and analysis system that aggregates jo
 This is an advanced data scraping system that demonstrates mastery of web scraping techniques, implementing a **Job Market Analysis Platform** as specified in the course requirements. The system integrates static scraping, dynamic content handling, concurrent processing, and professional data analysis with visualization.
 
 **Key Achievements:**
-- ✅ **Multi-Source Data Collection**: 3+ job platforms (Jobs.ge, CV.ge, HR.ge)
+- ✅ **Multi-Source Data Collection**: 3+ job platforms (Jobs.ge, CV.ge, SS.ge)
 - ✅ **Multiple Scraping Techniques**: Static (BeautifulSoup4), Dynamic (Selenium), Framework (Scrapy)
 - ✅ **Professional Architecture**: Factory Pattern, Strategy Pattern, OOP Design
 - ✅ **Database Storage**: PostgreSQL with optimized schema
@@ -32,7 +32,7 @@ jobs-ge-scraper/
 │   │   ├── platforms/         # Platform-specific scrapers
 │   │   │   ├── jobs_ge/       # Jobs.ge scraper
 │   │   │   ├── cv_ge/         # CV.ge scraper
-│   │   │   └── hr_ge/         # HR.ge scraper
+│   │   │   └── hr_ge/         # SS.ge scraper (jobs.ss.ge)
 │   │   ├── factory/           # Factory pattern implementation
 │   │   └── scrapy_crawler/    # Scrapy framework implementation
 │   ├── pipeline/              # Data processing pipelines
@@ -167,7 +167,7 @@ python cli.py html-report --output monthly_report.html
 |----------|--------|-----------------|----------|
 | **Jobs.ge** | ✅ Active | Static + Dynamic | Full job details, company info |
 | **CV.ge** | ✅ Active | Static | Job listings, location data |
-| **HR.ge** | ✅ Active | Static | Job postings, salary info |
+| **SS.ge** | ✅ Active | Dynamic (Selenium) | Job postings, dynamic content |
 
 ## 🎨 Data Visualization
 
