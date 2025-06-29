@@ -42,6 +42,23 @@ PLATFORM_CONFIGS = {
         "location_id": "1",  # Tbilisi
         "has_salary": True,
         "locale": "ge"
+    },
+    "cv_ge_all_jobs": {
+        "platforms": ["cv_ge"],
+        "job_count": 50,
+        "locale": "ge"
+    },
+    "cv_ge_tbilisi_jobs": {
+        "platforms": ["cv_ge"],
+        "job_count": 30,
+        "location_id": "tbilisi",
+        "locale": "ge"
+    },
+    "cv_ge_it_jobs": {
+        "platforms": ["cv_ge"],
+        "job_count": 25,
+        "query": "IT",  # Search for IT in job titles
+        "locale": "ge"
     }
 }
 
@@ -69,6 +86,13 @@ async def demonstrate_factory_pattern():
         print(f"  - Supported locations: {len(jobs_ge_scraper.supported_locations)} locations")
         print(f"  - Supported categories: {len(jobs_ge_scraper.supported_categories)} categories")
         
+        # Create CV.ge scraper with default strategy
+        cv_ge_scraper = ScraperFactory.create_scraper(ScraperType.CV_GE)
+        print(f"✓ Created {cv_ge_scraper.platform_name} scraper")
+        print(f"  - Strategy: {cv_ge_scraper.strategy.__class__.__name__}")
+        print(f"  - Supported locations: {len(cv_ge_scraper.supported_locations)} locations")
+        print(f"  - Supported categories: {len(cv_ge_scraper.supported_categories)} categories")
+        
     except Exception as e:
         print(f"✗ Error creating scraper: {str(e)}")
 
@@ -95,6 +119,13 @@ async def demonstrate_strategy_pattern():
     
     dynamic_scraper = ScraperFactory.create_scraper(ScraperType.JOBS_GE, strategy=dynamic_strategy)
     print(f"✓ Jobs.ge scraper with dynamic strategy")
+    
+    # Create CV.ge scrapers with different strategies
+    cv_static_scraper = ScraperFactory.create_scraper(ScraperType.CV_GE, strategy=static_strategy)
+    print(f"✓ CV.ge scraper with static strategy")
+    
+    cv_dynamic_scraper = ScraperFactory.create_scraper(ScraperType.CV_GE, strategy=dynamic_strategy)
+    print(f"✓ CV.ge scraper with dynamic strategy")
 
 
 async def demonstrate_pipeline_system():
@@ -120,6 +151,7 @@ async def demonstrate_pipeline_system():
                 job_count=config_data["job_count"],
                 location_id=config_data.get("location_id"),
                 category_id=config_data.get("category_id"),
+                query=config_data.get("query"),
                 has_salary=config_data.get("has_salary", False),
                 locale=config_data.get("locale", "en"),
                 max_concurrent=3,
@@ -147,14 +179,14 @@ async def demonstrate_pipeline_system():
     return manager
 
 
-async def run_sample_scraping(manager: PipelineManager, pipeline_name: str = "jobs_ge_it_remote"):
+async def run_sample_scraping(manager: PipelineManager, pipeline_name: str = "cv_ge_all_jobs"):
     """Run a sample scraping operation."""
     print("\n" + "="*60)
     print(f"RUNNING SAMPLE SCRAPING: {pipeline_name}")
     print("="*60)
     
     # Set up logging for this operation
-    scraping_logger = ScrapingLogger(platform="jobs_ge", operation="demo_scraping")
+    scraping_logger = ScrapingLogger(platform="cv_ge", operation="demo_scraping")
     scraping_logger.log_start(f"Demo scraping with pipeline: {pipeline_name}")
     
     try:
@@ -256,7 +288,7 @@ async def main():
         print("OPTIONAL: LIVE SCRAPING DEMONSTRATION")
         print("="*60)
         
-        print("\nThis will perform actual web scraping from jobs.ge")
+        print("\nThis will perform actual web scraping from CV.ge")
         print("The operation will:")
         print("  - Fetch real job listings")
         print("  - Save data to files")
@@ -279,6 +311,7 @@ async def main():
         print("\nKey Features Demonstrated:")
         print("✓ Factory Pattern - Easy creation of platform-specific scrapers")
         print("✓ Strategy Pattern - Flexible scraping approaches (static, dynamic, API)")
+        print("✓ Multi-Platform Support - Jobs.ge and CV.ge scrapers")
         print("✓ OOP Design - Clean inheritance and abstraction")
         print("✓ Pipeline System - Coordinated multi-platform scraping")
         print("✓ Configuration Management - Flexible settings and presets")
@@ -289,7 +322,11 @@ async def main():
         print("1. Create a new scraper class inheriting from BaseScraper")
         print("2. Implement the required abstract methods")
         print("3. Register it with the ScraperFactory")
-        print("4. The pipeline system will automatically support it!")
+        print("4. Add the platform to the Platform enum in data models")
+        print("5. The pipeline system will automatically support it!")
+        print("\nSupported Platforms:")
+        print("✓ Jobs.ge - Georgian job platform with advanced filtering")
+        print("✓ CV.ge - Georgian job platform with 24-page structure")
         
         logger.info("Job scraper demonstration completed successfully")
         
