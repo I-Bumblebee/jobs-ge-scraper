@@ -15,6 +15,7 @@ class ScraperType(Enum):
     """Available scraper types."""
     JOBS_GE = "jobs_ge"
     CV_GE = "cv_ge"
+    HR_GE = "hr_ge"
     INDEED = "indeed"
     LINKEDIN = "linkedin"
     GLASSDOOR = "glassdoor"
@@ -128,9 +129,11 @@ def _register_default_scrapers():
     # Import here to avoid circular imports
     from ..platforms.jobs_ge.jobs_ge_scraper import JobsGeScraper
     from ..platforms.cv_ge.cv_ge_scraper import CvGeScraper
+    from ..platforms.hr_ge.hr_ge_scraper import HrGeScraper
     
     ScraperFactory.register_scraper(ScraperType.JOBS_GE, JobsGeScraper)
     ScraperFactory.register_scraper(ScraperType.CV_GE, CvGeScraper)
+    ScraperFactory.register_scraper(ScraperType.HR_GE, HrGeScraper)
     
     # Additional scrapers can be registered here as they are implemented
     # ScraperFactory.register_scraper(ScraperType.INDEED, IndeedScraper)
