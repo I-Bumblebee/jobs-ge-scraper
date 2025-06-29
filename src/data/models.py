@@ -7,6 +7,7 @@ from enum import Enum
 class Platform(Enum):
     """Supported job platforms."""
     JOBS_GE = "jobs_ge"
+    CV_GE = "cv_ge"
     INDEED = "indeed"
     LINKEDIN = "linkedin"
     GLASSDOOR = "glassdoor"
@@ -42,6 +43,7 @@ class JobMetadata:
     is_remote: bool = False
     is_featured: bool = False
     is_urgent: bool = False
+    is_vip: bool = False
     
     def to_dict(self) -> Dict[str, bool]:
         """Convert to dictionary."""
