@@ -104,7 +104,7 @@ class Parser:
         except Exception:
             return None
 
-    def parse_job_list(self, html: str, limit: int = None) -> Iterator[ParsedJobRow]:
+    def parse_job_list(self, html: str, limit: Optional[int] = None) -> Iterator[ParsedJobRow]:
         """
         Parse job list HTML and yield job rows one at a time to conserve memory.
 
