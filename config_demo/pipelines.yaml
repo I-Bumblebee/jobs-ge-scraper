@@ -1,0 +1,52 @@
+pipelines:
+  jobs_ge_it_remote:
+    batch_size: 10
+    category_id: '6'
+    has_salary: true
+    include_descriptions: true
+    job_count: 50
+    locale: ge
+    location_id: '17'
+    max_concurrent: 5
+    max_concurrent_details: 5
+    max_retries: 3
+    output_format: json
+    platforms:
+    - jobs_ge
+    query: null
+    rate_limit_delay: 1.0
+    save_html: false
+  jobs_ge_tbilisi_all:
+    batch_size: 10
+    category_id: null
+    has_salary: false
+    include_descriptions: true
+    job_count: 100
+    locale: ge
+    location_id: '1'
+    max_concurrent: 5
+    max_concurrent_details: 5
+    max_retries: 3
+    output_format: json
+    platforms:
+    - jobs_ge
+    query: null
+    rate_limit_delay: 1.0
+    save_html: false
+  multi_platform_it:
+    batch_size: 10
+    category_id: '6'
+    has_salary: true
+    include_descriptions: true
+    job_count: 30
+    locale: en
+    location_id: null
+    max_concurrent: 3
+    max_concurrent_details: 5
+    max_retries: 3
+    output_format: json
+    platforms:
+    - jobs_ge
+    query: null
+    rate_limit_delay: 1.0
+    save_html: false

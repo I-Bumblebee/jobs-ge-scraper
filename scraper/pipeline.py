@@ -164,8 +164,9 @@ class Pipeline:
             self.logger.info(f"Processing page {page_num}/{self.collector.total_pages}")
 
             # Parse all jobs from this page
+            limit = job_count_on_last_page if on_last_page else None
             for job in self.parser.parse_job_list(
-                html, job_count_on_last_page if on_last_page else None
+                html, limit
             ):
                 # Ensure we have a valid ParsedJobRow
                 if not isinstance(job, ParsedJobRow):
@@ -182,7 +183,9 @@ class Pipeline:
                         if hasattr(value, "isoformat"):
                             dates_dict[key] = value.isoformat()
 
-                job_summaries[job.id] = cast(JobSummaryDict, job_dict)
+                # Ensure job_id is not None before using as key
+                if job.id is not None:
+                    job_summaries[job.id] = cast(JobSummaryDict, job_dict)
 
             # Yield the batch of summaries from this page
             yield job_summaries
@@ -203,7 +206,7 @@ class Pipeline:
             # Yield each summary for immediate processing
             for job_id, summary in summaries_batch.items():
                 self.logger.debug(f"Yielding summary for job {job_id}")
-                yield job_id, summary
+                yield job_id, cast(Dict[str, Any], summary)
 
         self.logger.info(
             f"Collected {len(all_job_ids)} job IDs, starting detail processing"
@@ -219,7 +222,7 @@ class Pipeline:
             # Process details asynchronously as they complete
             async for job_id, detail in self.job_details_generator(batch):
                 self.logger.debug(f"Yielding detail for job {job_id}")
-                yield job_id, detail
+                yield job_id, cast(Dict[str, Any], detail)
 
     async def run(self) -> None:
         """Execute the complete pipeline with streaming processing."""
@@ -249,7 +252,7 @@ class Pipeline:
                     merged_job = await self.merge_job_data(
                         job_summaries[job_id], job_details[job_id]
                     )
-                    await self.output_manager.save_job_temp(job_id, merged_job)
+                    await self.output_manager.save_job_temp(job_id, cast(Dict[str, Any], merged_job))
 
                     # Clean up memory
                     del job_summaries[job_id]
