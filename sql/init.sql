@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS job_listings (
     short_description TEXT,
     
     -- Location fields
-    city VARCHAR(100),
-    region VARCHAR(100),
+    city VARCHAR(500),
+    region VARCHAR(200),
     country VARCHAR(100),
     is_remote BOOLEAN DEFAULT FALSE,
     
@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS job_details (
     description_file_path VARCHAR(500),
     
     -- Location fields
-    city VARCHAR(100),
-    region VARCHAR(100),
+    city VARCHAR(500),
+    region VARCHAR(200),
     country VARCHAR(100),
     is_remote BOOLEAN DEFAULT FALSE,
     
