@@ -9,6 +9,7 @@ class Platform(Enum):
     JOBS_GE = "jobs_ge"
     CV_GE = "cv_ge"
     HR_GE = "hr_ge"
+    SS_GE = "ss_ge"
     INDEED = "indeed"
     LINKEDIN = "linkedin"
     GLASSDOOR = "glassdoor"

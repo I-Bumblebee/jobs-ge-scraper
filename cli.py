@@ -323,7 +323,8 @@ def reinit(force):
 @click.option('--show', is_flag=True, help='Display charts interactively')
 @click.option('--platform', '-p', default=None, help='Filter by platform')
 @click.option('--days', '-d', default=30, type=int, help='Days back for timeline charts (default: 30)')
-def charts(type, save_path, show, platform, days):
+@click.option('--dataset-label', '-l', default=None, help='Label to include in chart filenames (e.g., "5000_job")')
+def charts(type, save_path, show, platform, days, dataset_label):
     """Generate various charts and visualizations"""
     
     # Ensure charts directory exists
@@ -358,25 +359,25 @@ def charts(type, save_path, show, platform, days):
             
             # Generate charts based on type
             if type == 'platform' or type == 'all':
-                _create_platform_chart(df, save_path, show)
+                _create_platform_chart(df, save_path, show, dataset_label)
             
             if type == 'location' or type == 'all':
-                _create_location_chart(df, save_path, show)
+                _create_location_chart(df, save_path, show, dataset_label)
             
             if type == 'remote' or type == 'all':
-                _create_remote_chart(df, save_path, show)
+                _create_remote_chart(df, save_path, show, dataset_label)
             
             if type == 'timeline' or type == 'all':
-                _create_timeline_chart(df, save_path, show, days)
+                _create_timeline_chart(df, save_path, show, days, dataset_label)
             
             if type == 'salary' or type == 'all':
-                _create_salary_chart(df, save_path, show)
+                _create_salary_chart(df, save_path, show, dataset_label)
             
             if type == 'category' or type == 'all':
-                _create_category_chart(df, save_path, show)
+                _create_category_chart(df, save_path, show, dataset_label)
             
             if type == 'companies' or type == 'all':
-                _create_companies_chart(df, save_path, show)
+                _create_companies_chart(df, save_path, show, dataset_label)
             
             console.print(f"✅ Charts saved to {save_path}/", style="green")
             
@@ -388,7 +389,7 @@ def charts(type, save_path, show, platform, days):
         console.print(f"❌ Chart generation failed: {e}", style="red")
 
 
-def _create_platform_chart(df: pd.DataFrame, save_path: Path, show: bool):
+def _create_platform_chart(df: pd.DataFrame, save_path: Path, show: bool, dataset_label: Optional[str] = None):
     """Create jobs by platform chart"""
     plt.figure(figsize=(10, 6))
     
@@ -407,11 +408,12 @@ def _create_platform_chart(df: pd.DataFrame, save_path: Path, show: bool):
     plt.tight_layout()
     
     if not show:
-        plt.savefig(save_path / 'jobs_by_platform.png', dpi=300, bbox_inches='tight')
+        filename = f'jobs_by_platform_{dataset_label}.png' if dataset_label else 'jobs_by_platform.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
-def _create_location_chart(df: pd.DataFrame, save_path: Path, show: bool):
+def _create_location_chart(df: pd.DataFrame, save_path: Path, show: bool, dataset_label: Optional[str] = None):
     """Create jobs by location chart"""
     plt.figure(figsize=(12, 8))
     
@@ -435,11 +437,12 @@ def _create_location_chart(df: pd.DataFrame, save_path: Path, show: bool):
     plt.tight_layout()
     
     if not show:
-        plt.savefig(save_path / 'jobs_by_location.png', dpi=300, bbox_inches='tight')
+        filename = f'jobs_by_location_{dataset_label}.png' if dataset_label else 'jobs_by_location.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
-def _create_remote_chart(df: pd.DataFrame, save_path: Path, show: bool):
+def _create_remote_chart(df: pd.DataFrame, save_path: Path, show: bool, dataset_label: Optional[str] = None):
     """Create remote vs non-remote jobs pie chart"""
     plt.figure(figsize=(8, 8))
     
@@ -455,11 +458,12 @@ def _create_remote_chart(df: pd.DataFrame, save_path: Path, show: bool):
     plt.axis('equal')
     
     if not show:
-        plt.savefig(save_path / 'remote_jobs_distribution.png', dpi=300, bbox_inches='tight')
+        filename = f'remote_jobs_distribution_{dataset_label}.png' if dataset_label else 'remote_jobs_distribution.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
-def _create_timeline_chart(df: pd.DataFrame, save_path: Path, show: bool, days: int):
+def _create_timeline_chart(df: pd.DataFrame, save_path: Path, show: bool, days: int, dataset_label: Optional[str] = None):
     """Create jobs over time timeline chart"""
     plt.figure(figsize=(12, 6))
     
@@ -494,11 +498,13 @@ def _create_timeline_chart(df: pd.DataFrame, save_path: Path, show: bool, days: 
     plt.tight_layout()
     
     if not show:
-        plt.savefig(save_path / f'jobs_timeline_{days}days.png', dpi=300, bbox_inches='tight')
+        base_filename = f'jobs_timeline_{days}days'
+        filename = f'{base_filename}_{dataset_label}.png' if dataset_label else f'{base_filename}.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
-def _create_salary_chart(df: pd.DataFrame, save_path: Path, show: bool):
+def _create_salary_chart(df: pd.DataFrame, save_path: Path, show: bool, dataset_label: Optional[str] = None):
     """Create salary distribution chart"""
     plt.figure(figsize=(12, 6))
     
@@ -534,11 +540,12 @@ def _create_salary_chart(df: pd.DataFrame, save_path: Path, show: bool):
     plt.tight_layout()
     
     if not show:
-        plt.savefig(save_path / 'salary_distribution.png', dpi=300, bbox_inches='tight')
+        filename = f'salary_distribution_{dataset_label}.png' if dataset_label else 'salary_distribution.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
-def _create_category_chart(df: pd.DataFrame, save_path: Path, show: bool):
+def _create_category_chart(df: pd.DataFrame, save_path: Path, show: bool, dataset_label: Optional[str] = None):
     """Create jobs by category chart"""
     plt.figure(figsize=(12, 8))
     
@@ -562,11 +569,12 @@ def _create_category_chart(df: pd.DataFrame, save_path: Path, show: bool):
     plt.tight_layout()
     
     if not show:
-        plt.savefig(save_path / 'jobs_by_category.png', dpi=300, bbox_inches='tight')
+        filename = f'jobs_by_category_{dataset_label}.png' if dataset_label else 'jobs_by_category.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
-def _create_companies_chart(df: pd.DataFrame, save_path: Path, show: bool):
+def _create_companies_chart(df: pd.DataFrame, save_path: Path, show: bool, dataset_label: Optional[str] = None):
     """Create top companies by job count chart"""
     plt.figure(figsize=(12, 8))
     
@@ -590,7 +598,8 @@ def _create_companies_chart(df: pd.DataFrame, save_path: Path, show: bool):
     plt.tight_layout()
     
     if not show:
-        plt.savefig(save_path / 'top_companies.png', dpi=300, bbox_inches='tight')
+        filename = f'top_companies_{dataset_label}.png' if dataset_label else 'top_companies.png'
+        plt.savefig(save_path / filename, dpi=300, bbox_inches='tight')
         plt.close()
 
 
@@ -599,7 +608,8 @@ def _create_companies_chart(df: pd.DataFrame, save_path: Path, show: bool):
 @click.option('--platform', '-p', default=None, help='Filter by platform')
 @click.option('--days', '-d', default=30, type=int, help='Days back for timeline analysis (default: 30)')
 @click.option('--title', '-t', default='Job Market Analysis Report', help='Report title')
-def html_report(output, platform, days, title):
+@click.option('--dataset-label', '-l', default=None, help='Label to include in report filename (e.g., "5000_job")')
+def html_report(output, platform, days, title, dataset_label):
     """Generate comprehensive HTML report with embedded charts and data analysis"""
     
     # Ensure reports directory exists
@@ -607,7 +617,10 @@ def html_report(output, platform, days, title):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         reports_dir = Path("reports")
         reports_dir.mkdir(exist_ok=True)
-        output = reports_dir / f"job_analysis_report_{timestamp}.html"
+        base_filename = f"job_analysis_report"
+        if dataset_label:
+            base_filename += f"_{dataset_label}"
+        output = reports_dir / f"{base_filename}_{timestamp}.html"
     else:
         output_path = Path(output)
         if not output_path.is_absolute():

@@ -15,7 +15,7 @@ class ScraperType(Enum):
     """Available scraper types."""
     JOBS_GE = "jobs_ge"
     CV_GE = "cv_ge"
-    HR_GE = "hr_ge"
+    SS_GE = "ss_ge"
     INDEED = "indeed"
     LINKEDIN = "linkedin"
     GLASSDOOR = "glassdoor"
@@ -83,6 +83,7 @@ class ScraperFactory:
         descriptions = {
             ScraperType.JOBS_GE: "Georgian job platform Jobs.ge",
             ScraperType.CV_GE: "Georgian job platform CV.ge",
+            ScraperType.SS_GE: "Georgian job platform jobs.ss.ge",
             ScraperType.INDEED: "International job platform Indeed",
             ScraperType.LINKEDIN: "Professional network LinkedIn Jobs",
             ScraperType.GLASSDOOR: "Company review and job platform Glassdoor",
@@ -129,11 +130,11 @@ def _register_default_scrapers():
     # Import here to avoid circular imports
     from ..platforms.jobs_ge.jobs_ge_scraper import JobsGeScraper
     from ..platforms.cv_ge.cv_ge_scraper import CvGeScraper
-    from ..platforms.hr_ge.hr_ge_scraper import HrGeScraper
+    from ..platforms.hr_ge.ss_ge_scraper import SsGeScraper
     
     ScraperFactory.register_scraper(ScraperType.JOBS_GE, JobsGeScraper)
     ScraperFactory.register_scraper(ScraperType.CV_GE, CvGeScraper)
-    ScraperFactory.register_scraper(ScraperType.HR_GE, HrGeScraper)
+    ScraperFactory.register_scraper(ScraperType.SS_GE, SsGeScraper)
     
     # Additional scrapers can be registered here as they are implemented
     # ScraperFactory.register_scraper(ScraperType.INDEED, IndeedScraper)

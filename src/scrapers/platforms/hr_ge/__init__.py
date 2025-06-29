@@ -1,7 +1,7 @@
 """
-HR.ge scraper package for job scraping.
+SS.ge scraper package for job scraping.
 """
 
-from .hr_ge_scraper import HrGeScraper
+from .ss_ge_scraper import SsGeScraper
 
-__all__ = ['HrGeScraper'] 
+__all__ = ['SsGeScraper'] 

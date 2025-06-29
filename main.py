@@ -30,9 +30,10 @@ async def main():
     db_manager = DatabaseOutputManager()
     
     platforms = [
-        (ScraperType.JOBS_GE, {"job_count": 1, "category_id": "6", "location_id": "1", "locale": "ge"}),
-        (ScraperType.CV_GE, {"job_count": 1, "locale": "ge"}),
-        (ScraperType.HR_GE, {"job_count": 1, "locale": "ge"})
+        # Scale up to 5000 jobs total - production targets
+        (ScraperType.JOBS_GE, {"job_count": 2500, "category_id": "1", "location_id": "1", "locale": "ge"}),  # All categories  
+        (ScraperType.CV_GE, {"job_count": 2000, "locale": "ge"}),   # CV.ge 
+        (ScraperType.SS_GE, {"job_count": 500, "locale": "ge"})     # jobs.ss.ge with parallel optimization
     ]
     
     total_saved = 0
