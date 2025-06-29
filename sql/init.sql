@@ -205,15 +205,62 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Apply the trigger to relevant tables
+-- Apply the trigger to relevant tables (idempotent - drop if exists first)
+DROP TRIGGER IF EXISTS update_companies_updated_at ON companies;
 CREATE TRIGGER update_companies_updated_at BEFORE UPDATE ON companies
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_job_listings_updated_at ON job_listings;
 CREATE TRIGGER update_job_listings_updated_at BEFORE UPDATE ON job_listings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_job_details_updated_at ON job_details;
 CREATE TRIGGER update_job_details_updated_at BEFORE UPDATE ON job_details
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Generic jobs overview view (virtual table for easy data access)
+CREATE OR REPLACE VIEW jobs_overview AS
+SELECT 
+    jl.id,
+    jl.platform,
+    jl.title,
+    jl.company_name,
+    jl.city,
+    jl.region,
+    jl.country,
+    jl.is_remote,
+    jl.job_type,
+    jl.category,
+    jl.salary_min,
+    jl.salary_max,
+    jl.salary_currency,
+    jl.published_date,
+    jl.scraped_date,
+    jl.url,
+    jl.short_description,
+    jl.has_salary_info,
+    jl.is_featured,
+    jl.is_new,
+    -- Computed columns for better readability
+    CASE 
+        WHEN jl.salary_min IS NOT NULL AND jl.salary_max IS NOT NULL 
+        THEN CONCAT(jl.salary_min, '-', jl.salary_max, ' ', COALESCE(jl.salary_currency, ''))
+        WHEN jl.salary_min IS NOT NULL 
+        THEN CONCAT('From ', jl.salary_min, ' ', COALESCE(jl.salary_currency, ''))
+        ELSE 'Not specified'
+    END as salary_range,
+    CASE 
+        WHEN jl.is_remote THEN 'Remote'
+        WHEN jl.city IS NOT NULL AND jl.region IS NOT NULL 
+        THEN CONCAT(jl.city, ', ', jl.region)
+        WHEN jl.city IS NOT NULL 
+        THEN jl.city
+        ELSE 'Location not specified'
+    END as location_display,
+    EXTRACT(DAYS FROM (CURRENT_TIMESTAMP - jl.scraped_date)) as days_since_scraped,
+    EXTRACT(DAYS FROM (CURRENT_TIMESTAMP - jl.published_date)) as days_since_published
+FROM job_listings jl
+ORDER BY jl.scraped_date DESC;
 
 -- Insert some initial data or configurations if needed
 -- This is optional and can be removed if not needed 
